@@ -65,14 +65,13 @@ function searchMatching() {
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
-        console.log("rv/entry/search");
+        console.log("rv/entry/check");
         var data = this.response;
         console.log(data);
         if (data.status == "MATCHED") {
             MODE = 2;
-            let terminalID_A = data.terminal_id_A;
-            let terminalID_B = data.terminal_id_B;
-            if (myId == terminalID_A) {
+            let is_first = data.is_first;
+            if (is_first) {
                 // turn = true;
                 myCloer = BLACK;
                 document.getElementById("infomation").textContent = "あなたは黒番です";
