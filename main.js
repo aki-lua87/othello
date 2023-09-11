@@ -2,7 +2,7 @@
 
 const BLACK = 1, WHITE = -1;
 let data = [];
-let turn = true;
+let turn = true; // true:黒 false:白
 const board = document.getElementById("board");
 const h2 = document.querySelector("h2");
 const infomation = document.getElementById("infomation");
@@ -65,20 +65,17 @@ function searchMatching() {
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
-        console.log("rv/entry/search");
+        console.log("rv/entry/check");
         var data = this.response;
         console.log(data);
         if (data.status == "MATCHED") {
             MODE = 2;
-            let terminalID_A = data.terminal_id_A;
-            let terminalID_B = data.terminal_id_B;
-            if (myId == terminalID_A) {
-                // turn = true;
+            let is_first = data.is_first;
+            if (is_first) {
                 myCloer = BLACK;
                 document.getElementById("infomation").textContent = "あなたは黒番です";
             } else {
                 MODE = 3;
-                // turn = false;
                 myCloer = WHITE;
                 document.getElementById("infomation").textContent = "あなたは白番です";
                 setTimeout(searchPutDisc, 5000); // 再帰なので注意
@@ -195,11 +192,16 @@ function showTurn() {
         }
         return;
     }
+    // 連打処理 ゲームが終わってない&&[黒|白]置けない&&[黒|白]ターン
     if (!blacDisk && turn) {
         h2.textContent = "黒スキップ";
         showAnime();
         turn = !turn;
         setTimeout(showTurn, 2000);
+        if (myCloer === BLACK) {
+            // また探しに行く
+            setTimeout(searchPutDisc, 5000); // 再帰なので注意
+        }
         return;
     }
     if (!whiteDisk && !turn) {
@@ -207,6 +209,10 @@ function showTurn() {
         showAnime();
         turn = !turn;
         setTimeout(showTurn, 2000);
+        if (myCloer === WHITE) {
+            // また探しに行く
+            setTimeout(searchPutDisc, 5000); // 再帰なので注意
+        }
         return;
     }
 }
