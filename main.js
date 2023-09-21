@@ -192,8 +192,9 @@ function showTurn() {
         }
         return;
     }
-    // 連打処理 ゲームが終わってない&&[黒|白]置けない&&[黒|白]ターン
+    // 連打処理 ゲームが終わってない&&自分置けない&&自分ターン
     if (!blacDisk && turn) {
+        console.log("白連打");
         h2.textContent = "黒スキップ";
         showAnime();
         turn = !turn;
@@ -201,10 +202,13 @@ function showTurn() {
         if (myCloer === BLACK) {
             // また探しに行く
             setTimeout(searchPutDisc, 5000); // 再帰なので注意
+        } else {
+            MODE = 2
         }
         return;
     }
     if (!whiteDisk && !turn) {
+        console.log("黒連打");
         h2.textContent = "白スキップ";
         showAnime();
         turn = !turn;
@@ -212,6 +216,8 @@ function showTurn() {
         if (myCloer === WHITE) {
             // また探しに行く
             setTimeout(searchPutDisc, 5000); // 再帰なので注意
+        } else {
+            MODE = 2
         }
         return;
     }
