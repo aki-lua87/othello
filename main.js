@@ -69,6 +69,7 @@ function searchMatching() {
         var data = this.response;
         console.log(data);
         if (data.status == "MATCHED") {
+            console.log("D mode exchange:", MODE, 2);
             MODE = 2;
             let is_first = data.is_first;
             if (is_first) {
@@ -102,11 +103,16 @@ function sendPutDisc(x, y) {
         MODE = 3;
         searchPutDisc();
         document.getElementById("infomation").textContent = "送信しました:" + latestPutDisc;
+        showTurn();
     };
     request.send();
 }
 
 function searchPutDisc() {
+    if (MODE !== 3) {
+        console.log("searchPutDisc無効", MODE);
+        return;
+    }
     var request = new XMLHttpRequest();
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?terminal_id=' + myId, true);
     request.responseType = 'json';
@@ -114,16 +120,23 @@ function searchPutDisc() {
         console.log("rv/action/check");
         var data = this.response;
         console.log(data);
+        console.log("latestPutDisc:" + latestPutDisc);
+        console.log("data.latest:" + data.latest);
+        console.log("latest == latestPutDisc:" + (data.latest == latestPutDisc));
         let latest = data.latest;
-        if (latest === latestPutDisc) {
+        if (latest == latestPutDisc) {
+            console.log("searchPutDisc 再起");
             setTimeout(searchPutDisc, 5000); // 再帰なので注意
             return;
+        } else {
+            let x = Number(convertAlfaToNum(latest[0]));
+            let y = latest[1];
+            console.log("C mode exchange:", MODE, 2);
+            MODE = 2;
+            clickedAitePlayer(x, y - 1);
+            latestPutDisc = latest;
+            document.getElementById("infomation").textContent = "受信しました:" + latest;
         }
-        let x = Number(convertAlfaToNum(latest[0]));
-        let y = latest[1];
-        clickedAitePlayer(x, y - 1);
-        MODE = 2;
-        document.getElementById("infomation").textContent = "受信しました:" + latest;
     };
     request.send();
 }
@@ -201,24 +214,35 @@ function showTurn() {
         setTimeout(showTurn, 2000);
         if (myCloer === BLACK) {
             // また探しに行く
-            setTimeout(searchPutDisc, 5000); // 再帰なので注意
+            MODE = 3;
+            searchPutDisc(); // 再帰なので注意
         } else {
+            console.log("B mode exchange:", MODE, 2);
             MODE = 2
         }
+        // 連打関数
+        console.log("連打関数デバッグ:" + turn);
+        console.log("MODE:" + MODE);
+        console.log("myCloer:" + myCloer);
         return;
     }
     if (!whiteDisk && !turn) {
         console.log("黒連打");
         h2.textContent = "白スキップ";
-        showAnime();
-        turn = !turn;
-        setTimeout(showTurn, 2000);
+        showAnime()
+        turn = !turn
+        setTimeout(showTurn, 2000)
         if (myCloer === WHITE) {
             // また探しに行く
-            setTimeout(searchPutDisc, 5000); // 再帰なので注意
+            MODE = 3
+            searchPutDisc() // 再帰なので注意
         } else {
+            console.log("A mode exchange:", MODE, 2)
             MODE = 2
         }
+        console.log("連打関数デバッグ:" + turn);
+        console.log("MODE:" + MODE);
+        console.log("myCloer:" + myCloer);
         return;
     }
 }
@@ -251,13 +275,11 @@ function clicked() {
         turn = !turn;
         sendPutDisc(x, y);
     }
-    showTurn();
+    // showTurn();
 }
 
 function clickedAitePlayer(x, y) {
     console.log("clickedAitePlayer :" + x + "," + y);
-    console.log(typeof x);
-    console.log(typeof y);
     const color = turn ? BLACK : WHITE;
     console.log("color:" + color);
     console.log("myCloer:" + myCloer);
@@ -282,10 +304,10 @@ function clickedAitePlayer(x, y) {
 }
 
 function checkPut(x, y, color) {
-    let dx, dy;
-    const opponentColor = color == BLACK ? WHITE : BLACK;
-    let tmpReverseDisk = [];
-    let reverseDisk = [];
+    let dx, dy
+    const opponentColor = color == BLACK ? WHITE : BLACK
+    let tmpReverseDisk = []
+    let reverseDisk = []
     // 周囲8方向を調べる配列
     const direction = [
         [-1, 0], // 左
@@ -296,7 +318,7 @@ function checkPut(x, y, color) {
         [1, -1], // 右上
         [0, -1], // 上
         [-1, -1], // 左上
-    ];
+    ]
 
     // すでに置いてある
     if (data[y][x] === BLACK || data[y][x] === WHITE) {
