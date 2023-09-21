@@ -72,13 +72,14 @@ function searchMatching() {
             console.log("D mode exchange:", MODE, 2);
             MODE = 2;
             let is_first = data.is_first;
+            document.getElementById("infomation").textContent = "マッチングしました";
             if (is_first) {
                 myCloer = BLACK;
-                document.getElementById("infomation").textContent = "あなたは黒番です";
+                document.getElementById("my_disc").textContent = "あなたは黒番です";
             } else {
                 MODE = 3;
                 myCloer = WHITE;
-                document.getElementById("infomation").textContent = "あなたは白番です";
+                document.getElementById("my_disc").textContent = "あなたは白番です";
                 setTimeout(searchPutDisc, 5000); // 再帰なので注意
             }
         } else {
