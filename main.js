@@ -40,20 +40,39 @@ function init() {
     putDisc(3, 4, BLACK);
     putDisc(4, 3, BLACK);
     // マッチングAPIコール
+    // var request = new XMLHttpRequest();
+    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
+    // request.responseType = 'json';
+    // request.onload = function () {
+    //     var data = this.response;
+    //     console.log("rv/entry/regist");
+    //     console.log(data);
+    //     MODE = 1;
+    //     document.getElementById("infomation").textContent = "マッチ検索中です";
+    //     searchMatching();
+    // };
+    // request.send();
+    document.getElementById("infomation").textContent = "マッチ検索中です";
+    loopEntry();
+    showTurn();
+}
+
+function loopEntry() {
     var request = new XMLHttpRequest();
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
+        console.log("rv/entry/check before");
         var data = this.response;
-        console.log("rv/entry/regist");
         console.log(data);
-        MODE = 1;
-        document.getElementById("infomation").textContent = "マッチ検索中です";
-        searchMatching();
-    };
+        console.log(data.status);
+        if (data.status == "MATCHED") {
+            setTimeout(searchMatching, 5000); // 再帰なので注意
+        } else {
+            setTimeout(loopEntry, 5000); // 再帰なので注意
+        }
+    }
     request.send();
-
-    showTurn();
 }
 
 function showMassege(massege) {
@@ -62,33 +81,30 @@ function showMassege(massege) {
 
 function searchMatching() {
     var request = new XMLHttpRequest();
-    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
     // webは登録されないためregistをコールし続ける
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
+    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/entry/check before");
         var data = this.response;
         console.log(data);
+        console.log(data.status);
         if (data.status == "MATCHED") {
             console.log("D mode exchange:", MODE, 2);
             // ここでチェックする
-            request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
-            request.responseType = 'json';
-            request.onload = function () {
-                console.log("rv/entry/check after");
-                MODE = 2;
-                let is_first = data.is_first;
-                document.getElementById("infomation").textContent = "マッチングしました";
-                if (is_first) {
-                    myCloer = BLACK;
-                    document.getElementById("my_disc").textContent = "あなたは黒番です";
-                } else {
-                    MODE = 3;
-                    myCloer = WHITE;
-                    document.getElementById("my_disc").textContent = "あなたは白番です";
-                    setTimeout(searchPutDisc, 5000); // 再帰なので注意
-                }
+            console.log("rv/entry/check after");
+            MODE = 2;
+            let is_first = data.is_first;
+            document.getElementById("infomation").textContent = "マッチングしました";
+            if (is_first) {
+                myCloer = BLACK;
+                document.getElementById("my_disc").textContent = "あなたは黒番です";
+            } else {
+                MODE = 3;
+                myCloer = WHITE;
+                document.getElementById("my_disc").textContent = "あなたは白番です";
+                setTimeout(searchPutDisc, 5000); // 再帰なので注意
             }
         } else {
             setTimeout(searchMatching, 5000); // 再帰なので注意
@@ -129,6 +145,11 @@ function searchPutDisc() {
         console.log("rv/action/check");
         var data = this.response;
         console.log(data);
+        if (data.status == "CANCELED") {
+            document.getElementById("infomation").textContent = "エラーもしくはゲームが切断されました";
+            MODE = 99;
+            return;
+        }
         console.log("latestPutDisc:" + latestPutDisc);
         console.log("data.latest:" + data.latest);
         console.log("latest == latestPutDisc:" + (data.latest == latestPutDisc));
