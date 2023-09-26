@@ -41,7 +41,7 @@ function init() {
     putDisc(4, 3, BLACK);
     // マッチングAPIコール
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
         var data = this.response;
@@ -62,25 +62,33 @@ function showMassege(massege) {
 
 function searchMatching() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?terminal_id=' + myId, true);
+    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
+    // webは登録されないためregistをコールし続ける
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
-        console.log("rv/entry/check");
+        console.log("rv/entry/check before");
         var data = this.response;
         console.log(data);
         if (data.status == "MATCHED") {
             console.log("D mode exchange:", MODE, 2);
-            MODE = 2;
-            let is_first = data.is_first;
-            document.getElementById("infomation").textContent = "マッチングしました";
-            if (is_first) {
-                myCloer = BLACK;
-                document.getElementById("my_disc").textContent = "あなたは黒番です";
-            } else {
-                MODE = 3;
-                myCloer = WHITE;
-                document.getElementById("my_disc").textContent = "あなたは白番です";
-                setTimeout(searchPutDisc, 5000); // 再帰なので注意
+            // ここでチェックする
+            request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
+            request.responseType = 'json';
+            request.onload = function () {
+                console.log("rv/entry/check after");
+                MODE = 2;
+                let is_first = data.is_first;
+                document.getElementById("infomation").textContent = "マッチングしました";
+                if (is_first) {
+                    myCloer = BLACK;
+                    document.getElementById("my_disc").textContent = "あなたは黒番です";
+                } else {
+                    MODE = 3;
+                    myCloer = WHITE;
+                    document.getElementById("my_disc").textContent = "あなたは白番です";
+                    setTimeout(searchPutDisc, 5000); // 再帰なので注意
+                }
             }
         } else {
             setTimeout(searchMatching, 5000); // 再帰なので注意
@@ -95,7 +103,7 @@ function sendPutDisc(x, y) {
     let left = convertNumToAlfa(String(x));
     latestPutDisc = left + (y + 1);
     console.log("latestPutDisc:" + latestPutDisc);
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/regist?terminal_id=' + myId + '&action=' + latestPutDisc, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/regist?app_id=web&terminal_id=' + myId + '&action=' + latestPutDisc, true);
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/action/regist");
@@ -115,7 +123,7 @@ function searchPutDisc() {
         return;
     }
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/action/check");
