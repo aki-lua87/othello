@@ -145,8 +145,8 @@ function searchPutDisc() {
         console.log("rv/action/check");
         var data = this.response;
         console.log(data);
-        if (data.status == "CANCELED") {
-            document.getElementById("infomation").textContent = "エラーもしくはゲームが切断されました";
+        if (data.status == "FINISHED") {
+            document.getElementById("infomation").textContent = "ゲームが終了しました";
             MODE = 99;
             return;
         }
