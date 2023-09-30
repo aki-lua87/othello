@@ -40,20 +40,39 @@ function init() {
     putDisc(3, 4, BLACK);
     putDisc(4, 3, BLACK);
     // マッチングAPIコール
+    // var request = new XMLHttpRequest();
+    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
+    // request.responseType = 'json';
+    // request.onload = function () {
+    //     var data = this.response;
+    //     console.log("rv/entry/regist");
+    //     console.log(data);
+    //     MODE = 1;
+    //     document.getElementById("infomation").textContent = "マッチ検索中です";
+    //     searchMatching();
+    // };
+    // request.send();
+    document.getElementById("infomation").textContent = "マッチ検索中です";
+    loopEntry();
+    showTurn();
+}
+
+function loopEntry() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
+        console.log("rv/entry/check before");
         var data = this.response;
-        console.log("rv/entry/regist");
         console.log(data);
-        MODE = 1;
-        document.getElementById("infomation").textContent = "マッチ検索中です";
-        searchMatching();
-    };
+        console.log(data.status);
+        if (data.status == "MATCHED") {
+            setTimeout(searchMatching, 5000); // 再帰なので注意
+        } else {
+            setTimeout(loopEntry, 5000); // 再帰なので注意
+        }
+    }
     request.send();
-
-    showTurn();
 }
 
 function showMassege(massege) {
@@ -62,23 +81,30 @@ function showMassege(massege) {
 
 function searchMatching() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
+    // webは登録されないためregistをコールし続ける
+    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
-        console.log("rv/entry/check");
+        console.log("rv/entry/check before");
         var data = this.response;
         console.log(data);
+        console.log(data.status);
         if (data.status == "MATCHED") {
             console.log("D mode exchange:", MODE, 2);
+            // ここでチェックする
+            console.log("rv/entry/check after");
             MODE = 2;
             let is_first = data.is_first;
+            document.getElementById("aite_name").textContent = "対戦相手:" + data.opponent_user_id;
+            document.getElementById("infomation").textContent = "マッチングしました";
             if (is_first) {
                 myCloer = BLACK;
-                document.getElementById("infomation").textContent = "あなたは黒番です";
+                document.getElementById("my_disc").textContent = "あなたは黒番です";
             } else {
                 MODE = 3;
                 myCloer = WHITE;
-                document.getElementById("infomation").textContent = "あなたは白番です";
+                document.getElementById("my_disc").textContent = "あなたは白番です";
                 setTimeout(searchPutDisc, 5000); // 再帰なので注意
             }
         } else {
@@ -94,7 +120,7 @@ function sendPutDisc(x, y) {
     let left = convertNumToAlfa(String(x));
     latestPutDisc = left + (y + 1);
     console.log("latestPutDisc:" + latestPutDisc);
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/regist?terminal_id=' + myId + '&action=' + latestPutDisc, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/regist?app_id=web&terminal_id=' + myId + '&action=' + latestPutDisc, true);
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/action/regist");
@@ -114,12 +140,21 @@ function searchPutDisc() {
         return;
     }
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?terminal_id=' + myId, true);
+    request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?app_id=web&terminal_id=' + myId, true);
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/action/check");
         var data = this.response;
         console.log(data);
+        if (data.status == "FINISHED") {
+            document.getElementById("infomation").textContent = "ゲームが終了しました";
+            MODE = 99;
+            return;
+        } else if (data.status == "GIVEUP") {
+            document.getElementById("infomation").textContent = "相手が投了しました";
+            MODE = 99;
+            return;
+        }
         console.log("latestPutDisc:" + latestPutDisc);
         console.log("data.latest:" + data.latest);
         console.log("latest == latestPutDisc:" + (data.latest == latestPutDisc));
