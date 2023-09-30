@@ -96,6 +96,7 @@ function searchMatching() {
             console.log("rv/entry/check after");
             MODE = 2;
             let is_first = data.is_first;
+            document.getElementById("aite_name").textContent = "対戦相手:" + data.opponent_user_id;
             document.getElementById("infomation").textContent = "マッチングしました";
             if (is_first) {
                 myCloer = BLACK;
@@ -147,6 +148,10 @@ function searchPutDisc() {
         console.log(data);
         if (data.status == "FINISHED") {
             document.getElementById("infomation").textContent = "ゲームが終了しました";
+            MODE = 99;
+            return;
+        } else if (data.status == "GIVEUP") {
+            document.getElementById("infomation").textContent = "相手が投了しました";
             MODE = 99;
             return;
         }
