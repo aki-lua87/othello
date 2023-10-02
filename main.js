@@ -67,9 +67,9 @@ function loopEntry() {
         console.log(data);
         console.log(data.status);
         if (data.status == "MATCHED") {
-            setTimeout(searchMatching, 5000); // 再帰なので注意
+            setTimeout(searchMatching, 5000); // 再帰なので注意->再帰じゃない
         } else {
-            setTimeout(loopEntry, 5000); // 再帰なので注意
+            setTimeout(loopEntry, 15000); // 再帰なので注意-> 多いのでこれは15秒
         }
     }
     request.send();
