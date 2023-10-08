@@ -156,10 +156,11 @@ function searchPutDiscLoop() {
         console.log("latestPutDisc:" + latestPutDisc);
         console.log("data.latest:" + data.latest);
         console.log("latest == latestPutDisc:" + (data.latest == latestPutDisc));
+        // 棋譜が棋譜-2じゃないなら棋譜を同期したい
         let latest = data.latest;
         if (latest == latestPutDisc) {
             console.log("searchPutDisc 再起");
-            setTimeout(searchPutDisc, 5000); // 再帰なので注意
+            setTimeout(searchPutDiscLoop, 5000); // 再帰なので注意
             return;
         } else {
             let x = Number(convertAlfaToNum(latest[0]));
@@ -169,7 +170,7 @@ function searchPutDiscLoop() {
             // document.getElementById("infomation").textContent = "受信しました:" + latest;
             kihu = data.history.join().replace(/,/g, '')
             document.getElementById("infomation").textContent = "棋譜:" + kihu;
-            setTimeout(searchPutDisc, 5000);
+            setTimeout(searchPutDiscLoop, 5000);
         }
     };
     request.send();
