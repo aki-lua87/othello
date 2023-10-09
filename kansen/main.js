@@ -145,11 +145,11 @@ function searchPutDiscLoop() {
         var data = this.response;
         console.log(data);
         if (data.status == "FINISHED") {
-            document.getElementById("infomation").textContent = "ゲームが終了しました";
+            document.getElementById("infomation").textContent = "ゲームが終了しました:::" + kihu;
             MODE = 99;
             return;
         } else if (data.status == "GIVEUP") {
-            document.getElementById("infomation").textContent = "ゲームが終了しました";
+            document.getElementById("infomation").textContent = "ゲームが終了しました:::" + kihu;
             MODE = 99;
             return;
         }
