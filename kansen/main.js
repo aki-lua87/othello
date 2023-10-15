@@ -23,62 +23,58 @@ function start() {
 }
 
 function init() {
-    MODE = 0;
+    MODE = 0
     for (let i = 0; i < cells; i++) {
-        const tr = document.createElement("tr");
-        data[i] = Array(cells).fill(0);
+        const tr = document.createElement("tr")
+        data[i] = Array(cells).fill(0)
         for (let j = 0; j < cells; j++) {
-            const td = document.createElement("td");
-            const disk = document.createElement("div");
-            tr.appendChild(td);
-            td.appendChild(disk);
-            td.className = "cell";
-            td.onclick = clicked;
+            const td = document.createElement("td")
+            const disk = document.createElement("div")
+            tr.appendChild(td)
+            td.appendChild(disk)
+            td.className = "cell"
+            td.onclick = clicked
         }
-        board.appendChild(tr);
+        board.appendChild(tr)
     }
-    putDisc(3, 3, WHITE);
-    putDisc(4, 4, WHITE);
-    putDisc(3, 4, BLACK);
-    putDisc(4, 3, BLACK);
-    document.getElementById("infomation").textContent = "マッチ検索中です";
+    putDisc(3, 3, WHITE)
+    putDisc(4, 4, WHITE)
+    putDisc(3, 4, BLACK)
+    putDisc(4, 3, BLACK)
+    document.getElementById("infomation").textContent = "マッチ検索中です"
 
     // クエリパラメータからmatch_idを取得
-    const query = location.search;
-    console.log(query);
-    const params = new URLSearchParams(query);
-    console.log(params);
-    match_id = params.get("match_id");
-    console.log(match_id);
-    // loopEntry();
-    // showTurn();
+    const query = location.search
+    console.log(query)
+    const params = new URLSearchParams(query)
+    console.log(params)
+    match_id = params.get("match_id")
+    console.log(match_id)
     // マッチングを取得
     var request = new XMLHttpRequest();
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/match/data?match_id=' + match_id, true);
-    request.responseType = 'json';
+    request.responseType = 'json'
     request.onload = function () {
         var data = this.response;
         console.log(data);
         console.log(data.status);
         console.log(data.history.join());
         kihu = data.history.join().replace(/,/g, '')
-        document.getElementById("b_name").textContent = data.PlayerA
-        document.getElementById("w_name").textContent = data.PlayerB
-        document.getElementById("infomation").textContent = "棋譜:" + kihu;
+        b_name = data.player_black
+        w_name = data.player_white
+        document.getElementById("b_name").textContent = b_name
+        document.getElementById("w_name").textContent = w_name
+        document.getElementById("infomation").textContent = "棋譜:" + kihu
         for (let i = 0; i < data.history.length; ++i) {
-            let hist1 = data.history[i];
-            console.log(hist1);
-            let x = Number(convertAlfaToNum(hist1[0]));
-            let y = hist1[1];
-            clickedAitePlayer(x, y - 1);
+            let hist1 = data.history[i]
+            console.log(hist1)
+            let x = Number(convertAlfaToNum(hist1[0]))
+            let y = hist1[1]
+            clickedAitePlayer(x, y - 1)
         }
-        searchPutDiscLoop();
+        searchPutDiscLoop()
     }
-    request.send();
-    // マッチングから棋譜を取得して盤面を再現
-
-    // 取得ループ
-
+    request.send()
 }
 
 // function loopEntry() {
