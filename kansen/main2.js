@@ -55,13 +55,15 @@ function init() {
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/match/data?match_id=' + match_id, true);
     request.responseType = 'json'
     request.onload = function () {
-        var data = this.response;
-        console.log(data);
-        console.log(data.status);
-        console.log(data.history.join());
+        var data = this.response
+        console.log(data)
+        console.log(data.status)
+        console.log(data.history.join())
         kihu = data.history.join().replace(/,/g, '')
         b_name = data.player_black
         w_name = data.player_white
+        console.log(data.player_black)
+        console.log(data.player_white)
         document.getElementById("b_name").textContent = b_name
         document.getElementById("w_name").textContent = w_name
         document.getElementById("infomation").textContent = "棋譜:" + kihu
