@@ -62,6 +62,8 @@ function init() {
         console.log(data.status);
         console.log(data.history.join());
         kihu = data.history.join().replace(/,/g, '')
+        document.getElementById("b_name").textContent = data.PlayerA
+        document.getElementById("w_name").textContent = data.PlayerB
         document.getElementById("infomation").textContent = "棋譜:" + kihu;
         for (let i = 0; i < data.history.length; ++i) {
             let hist1 = data.history[i];
