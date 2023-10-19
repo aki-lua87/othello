@@ -13,7 +13,6 @@ let kihu = "";
 let match_id = "";
 
 let MODE = 0; // 0:マッチAPI前 1:マッチ捜索中 2:自手待ち 3:受信(相手)待ち 4: 自身も手送信待ち 99:マッチ失敗
-const myId = crypto.randomUUID();
 let myCloer = BLACK;
 
 function start() {
@@ -45,11 +44,14 @@ function init() {
 
     // クエリパラメータからmatch_idを取得
     const query = location.search
-    console.log(query)
+    console.log("query:" + query)
     const params = new URLSearchParams(query)
-    console.log(params)
+    console.log("params:" + params)
     match_id = params.get("match_id")
-    console.log(match_id)
+    console.log("match_id:" + match_id)
+    if (match_id == null) {
+        return
+    }
     // マッチングを取得
     var request = new XMLHttpRequest();
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/match/data?match_id=' + match_id, true);
@@ -79,62 +81,9 @@ function init() {
     request.send()
 }
 
-// function loopEntry() {
-//     var request = new XMLHttpRequest();
-//     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/action/check?app_id=web&terminal_id=' + myId, true);
-//     request.responseType = 'json';
-//     request.onload = function () {
-//         console.log("rv/entry/check before");
-//         var data = this.response;
-//         console.log(data);
-//         console.log(data.status);
-//         if (data.status == "MATCHED") {
-//             setTimeout(searchMatching, 5000); // 再帰なので注意->再帰じゃない
-//         } else {
-//             setTimeout(loopEntry, 15000); // 再帰なので注意-> 多いのでこれは15秒
-//         }
-//     }
-//     request.send();
-// }
-
 function showMassege(massege) {
     alert(massege);
 }
-
-// function searchMatching() {
-//     var request = new XMLHttpRequest();
-//     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
-//     // webは登録されないためregistをコールし続ける
-//     // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
-//     request.responseType = 'json';
-//     request.onload = function () {
-//         console.log("rv/entry/check before");
-//         var data = this.response;
-//         console.log(data);
-//         console.log(data.status);
-//         if (data.status == "MATCHED") {
-//             console.log("D mode exchange:", MODE, 2);
-//             // ここでチェックする
-//             console.log("rv/entry/check after");
-//             MODE = 2;
-//             let is_first = data.is_first;
-//             document.getElementById("aite_name").textContent = "対戦相手:" + data.opponent_user_id;
-//             document.getElementById("infomation").textContent = "マッチングしました";
-//             if (is_first) {
-//                 myCloer = BLACK;
-//                 document.getElementById("my_disc").textContent = "あなたは黒番です";
-//             } else {
-//                 MODE = 3;
-//                 myCloer = WHITE;
-//                 document.getElementById("my_disc").textContent = "あなたは白番です";
-//                 setTimeout(searchPutDisc, 5000); // 再帰なので注意
-//             }
-//         } else {
-//             setTimeout(searchMatching, 5000); // 再帰なので注意
-//         }
-//     };
-//     request.send();
-// }
 
 function searchPutDiscLoop() {
     var request = new XMLHttpRequest();
@@ -252,7 +201,7 @@ function showTurn() {
         if (myCloer === BLACK) {
             // また探しに行く
             MODE = 3;
-            searchPutDisc(); // 再帰なので注意
+            searchPutDiscLoop(); // 再帰なので注意
         } else {
             console.log("B mode exchange:", MODE, 2);
             MODE = 2
@@ -272,7 +221,7 @@ function showTurn() {
         if (myCloer === WHITE) {
             // また探しに行く
             MODE = 3
-            searchPutDisc() // 再帰なので注意
+            searchPutDiscLoop() // 再帰なので注意
         } else {
             console.log("A mode exchange:", MODE, 2)
             MODE = 2
@@ -320,10 +269,6 @@ function clickedAitePlayer(x, y) {
     const color = turn ? BLACK : WHITE;
     console.log("color:" + color);
     console.log("myCloer:" + myCloer);
-    // if (color === myCloer) {
-    //     console.log("color違反");
-    //     return;
-    // }
     // マスに置けるかチェック
     if (data[y][x] !== 0) {
         console.log("マス違反");
@@ -415,18 +360,6 @@ function checkReverse(color) {
     return false;
 }
 
-// function restartBtn() {
-//     const restartBtn = document.getElementById("restartBtn");
-//     restartBtn.classList.remove("hide");
-//     restartBtn.animate(
-//         { opacity: [1, 0.5, 1] },
-//         { delay: 2000, duration: 3000, iterations: "Infinity" }
-//     );
-
-//     restartBtn.addEventListener("click", () => {
-//         document.location.reload();
-//     });
-// }
 function showAnime() {
     h2.animate({ opacity: [0, 1] }, { duration: 500, iterations: 4 });
 }
