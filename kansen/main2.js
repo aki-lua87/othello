@@ -121,7 +121,7 @@ function searchPutDiscLoop() {
             // document.getElementById("infomation").textContent = "受信しました:" + latest;
             kihu = data.history.join().replace(/,/g, '')
             document.getElementById("infomation").textContent = "棋譜:" + kihu;
-            setTimeout(searchPutDiscLoop, 5000);
+            setTimeout(searchPutDiscLoop, 4000);
         }
     };
     request.send();

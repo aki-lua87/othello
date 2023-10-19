@@ -14,6 +14,15 @@ let MODE = 0; // 0:マッチAPI前 1:マッチ捜索中 2:自手待ち 3:受信(
 const myId = crypto.randomUUID();
 let myCloer = BLACK;
 
+
+// クエリパラメータからnameを取得
+const query = location.search
+console.log(query)
+const params = new URLSearchParams(query)
+console.log(params)
+let myName = params.get("name")
+console.log(myName)
+
 function start() {
     board.innerHTML = "";
     init();
@@ -39,22 +48,28 @@ function init() {
     putDisc(4, 4, WHITE);
     putDisc(3, 4, BLACK);
     putDisc(4, 3, BLACK);
-    // マッチングAPIコール
-    // var request = new XMLHttpRequest();
-    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
-    // request.responseType = 'json';
-    // request.onload = function () {
-    //     var data = this.response;
-    //     console.log("rv/entry/regist");
-    //     console.log(data);
-    //     MODE = 1;
-    //     document.getElementById("infomation").textContent = "マッチ検索中です";
-    //     searchMatching();
-    // };
-    // request.send();
     document.getElementById("infomation").textContent = "マッチ検索中です";
-    loopEntry();
-    showTurn();
+    if (myName === null || myName === "") {
+        loopEntry();
+        showTurn();
+    } else {
+        var request = new XMLHttpRequest();
+        request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/terminal/regist?app_id=web&name=' + myName + '&terminal_id=' + myId, true);
+        request.responseType = 'json';
+        request.onload = function () {
+            console.log("registname");
+            var data = this.response;
+            console.log(data);
+            loopEntry();
+            showTurn();
+        }
+        request.send();
+    }
+}
+
+
+function registName() {
+
 }
 
 function loopEntry() {
@@ -82,8 +97,7 @@ function showMassege(massege) {
 function searchMatching() {
     var request = new XMLHttpRequest();
     request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/check?app_id=web&terminal_id=' + myId, true);
-    // webは登録されないためregistをコールし続ける
-    // request.open('GET', 'https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/regist?app_id=web&terminal_id=' + myId, true);
+    // webは登録されないためregistでマッチングしたらチェック
     request.responseType = 'json';
     request.onload = function () {
         console.log("rv/entry/check before");
