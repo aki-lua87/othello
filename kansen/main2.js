@@ -62,8 +62,8 @@ function init() {
         console.log(data.status)
         console.log(data.history.join())
         kihu = data.history.join().replace(/,/g, '')
-        b_name = data.player_black
-        w_name = data.player_white
+        let b_name = data.player_black
+        let w_name = data.player_white
         console.log(data.player_black)
         console.log(data.player_white)
         document.getElementById("b_name").textContent = b_name
