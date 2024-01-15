@@ -143,6 +143,6 @@ h2 {
 }
 
 #kihu {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    word-wrap: break-all;
+    overflow-wrap: break-all;
 }
