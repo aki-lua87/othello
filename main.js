@@ -29,6 +29,21 @@ function start() {
     modal.classList.add("hide");
 }
 
+// ここだけFetch...
+function surrender() {
+    fetch('https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/giveup?app_id=web&terminal_id=' + myId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
+
 function init() {
     MODE = 0;
     for (let i = 0; i < cells; i++) {

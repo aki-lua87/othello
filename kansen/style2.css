@@ -141,3 +141,8 @@ h2 {
 .hide {
     display: none;
 }
+
+#kihu {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}

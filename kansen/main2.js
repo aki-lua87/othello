@@ -68,13 +68,17 @@ function init() {
         console.log(data.player_white)
         document.getElementById("b_name").textContent = b_name
         document.getElementById("w_name").textContent = w_name
-        document.getElementById("infomation").textContent = "棋譜:" + kihu
+        document.getElementById("infomation").textContent = "対戦中"
+        document.getElementById("kihu").textContent = "棋譜:" + kihu
         for (let i = 0; i < data.history.length; ++i) {
             let hist1 = data.history[i]
             console.log(hist1)
             let x = Number(convertAlfaToNum(hist1[0]))
             let y = hist1[1]
             clickedAitePlayer(x, y - 1)
+        }
+        if (data.hasOwnProperty('latest')) {
+            latestPutDisc = data.latest;
         }
         searchPutDiscLoop()
     }
@@ -114,13 +118,14 @@ function searchPutDiscLoop() {
             setTimeout(searchPutDiscLoop, 5000); // 再帰なので注意
             return;
         } else {
+            latestPutDisc = latest;
             let x = Number(convertAlfaToNum(latest[0]));
             let y = latest[1];
             clickedAitePlayer(x, y - 1);
-            latestPutDisc = latest;
             // document.getElementById("infomation").textContent = "受信しました:" + latest;
             kihu = data.history.join().replace(/,/g, '')
-            document.getElementById("infomation").textContent = "棋譜:" + kihu;
+            document.getElementById("infomation").textContent = "対戦中";
+            document.getElementById("kihu").textContent = "棋譜:" + kihu
             setTimeout(searchPutDiscLoop, 4000);
         }
     };
