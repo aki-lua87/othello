@@ -23,6 +23,8 @@ console.log(params)
 let myName = params.get("name")
 console.log(myName)
 
+document.getElementById('surrenderBtn').addEventListener('click', surrender);
+
 function start() {
     board.innerHTML = "";
     init();
@@ -31,6 +33,7 @@ function start() {
 
 // ここだけFetch...
 function surrender() {
+    console.log("surrender");
     fetch('https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/giveup?app_id=web&terminal_id=' + myId, {
         method: 'GET',
         headers: {
