@@ -33,6 +33,10 @@ function start() {
 
 // ここだけFetch...
 function surrender() {
+    if (MODE === 0 || MODE === 1 || MODE === 99) {
+        console.log("cannot surrender");
+        return;
+    }
     console.log("surrender");
     fetch('https://cwylm72ahf.execute-api.ap-northeast-1.amazonaws.com/dev/rv/entry/giveup?app_id=web&terminal_id=' + myId, {
         method: 'GET',
